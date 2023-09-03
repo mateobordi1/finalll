@@ -1,5 +1,7 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    {{request.user}}
+   bienvenido jugador: {{request.user.username}}
+    categoria:{{request.user.categoria}}
+
 {% endblock %}

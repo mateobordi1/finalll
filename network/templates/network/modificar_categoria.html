@@ -1,0 +1,21 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+    <h3> Modificar Caategoria</h3>
+    {% for jugador in jugadores %}
+    <div>
+            <div>
+                {{jugador.username}}
+            </div>
+            <div>
+                {{jugador.posicion}}
+            </div>
+            <div>
+                <button data-iduser="{{jugador.id}}" id="agregar_jugador">Agregar</button>
+            </div>
+            
+            <br>      
+    </div>
+    {% endfor %}
+
+{% endblock %}
