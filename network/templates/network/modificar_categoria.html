@@ -10,10 +10,15 @@
             <div>
                 {{jugador.posicion}}
             </div>
-            <div>
-                <button data-iduser="{{jugador.id}}" id="agregar_jugador">Agregar</button>
-            </div>
-            
+            {% if jugador.categoria_estado == 0 %}
+                <div>
+                    <button class="botones_a_categoria" data-id_user="{{jugador.id}}" id="agregar_jugador">Agregar</button>
+                </div>
+            {% else %}
+                <div>
+                    <button class="botones_a_categoria" data-id_user="{{jugador.id}}" id="agregar_jugador">Quitar</button>
+                </div>
+            {% endif %}
             <br>      
     </div>
     {% endfor %}

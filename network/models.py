@@ -27,30 +27,5 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
     
-def calcular_categoria(fecha_nacimiento):
-    # Obtener el año actual
-    año_actual = date.today().year
 
-    # Extraer el año de la fecha de nacimiento
-    año_nacimiento = fecha_nacimiento.year
-
-    # Calcular la edad en función del año de nacimiento
-    edad = año_actual - año_nacimiento
-
-    # Aplicar las reglas para determinar la categoría
-    if 8 <= edad <= 17:
-        categorias = {
-            8: "cebollitas",
-            9: "doceaba",
-            10: "primerodecima",
-            11: "decima",
-            12: "novena",
-            13: "octava",
-            14: "septima",
-            15: "sexta",
-            16: "quinta",
-            17: "cuarta",
-        }
-        return categorias[edad]
-    else:
-        return "Categoría no válida"
+    

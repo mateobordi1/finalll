@@ -7,6 +7,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from datetime import date
 
 from .models import User , Categoria
 
@@ -15,21 +16,53 @@ def index(request):
     if request.method == "GET":
 
         if request.user.is_authenticated and request.user.logeado_como == "jugador":
+  
+            if request.user.categoria == None:
+                año_actual = date.today().year
+                # Extraer el año de la fecha de nacimiento
+                año_nacimiento = request.user.fecha_nacimiento.year
+                # Calcular la edad en función del año de nacimiento
+                print(año_actual)
+                print(año_nacimiento)
+                edad = año_actual - año_nacimiento
+                user = request.user
+                print(edad)
+                # Aplicar las reglas para determinar la categoría
+                if edad == 18 or 17:
+                    user.categoria = 'cuarta'
+                if edad == 16:
+                    user.categoria = 'quinta'
+                if edad == 15:
+                    user.categoria = 'sexta'
+                if edad == 14:
+                    user.categoria = 'septima'
+                if edad == 13:
+                    user.categoria = 'octava'
+                if edad == 12:
+                    user.categoria = 'novena'
+                if edad == 11:
+                    user.categoria = 'decima'
+                if edad == 10:
+                    user.categoria = 'undecima'
+                if edad == 9:
+                    user.categoria = 'doceaba'
+                if edad <=  8:
+                        user.categoria = 'cebollitas'
+                user.save()
 
             return render(request, "network/index.html")
         
         elif request.user.is_authenticated and request.user.logeado_como == "dt" or "pf":
-            
-            jugadores = User.objects.filter(logeado_como="jugador")
-            cero ="0"
-            if request.user.categoria == cero:
+             
+            if request.user.categoria == "0":
                 categoria_asignada = False
             else:
                 categoria_asignada = True
             categorias = request.user.categoria
             categoria_lista = categorias.split()
-
             print(categoria_lista)
+            
+            jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria_lista[0], categoria_estado=True )
             return render(request, 'network/profeindex.html', {
                 "jugadores": jugadores,
                 "categoria_asignada": categoria_asignada,
@@ -117,9 +150,22 @@ def register(request):
 
 def modificar_categoria(request, categoria):
     if request.method == "GET":
-        jugadores = User.objects.filter(logeado_como="jugador")
+        jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria)
         return render(request , 'network/modificar_categoria.html', {
             "jugadores" : jugadores
         })
+    
+def a_q(request, id_user):
+    if request.method == "PUT":
+        user = User.objects.get(pk=id_user)
+        data = json.loads(request.body)
+        user.categoria_estado = data["t_f"]
+        user.save()
+        response_data = {
+            "categoria_estado": user.categoria_estado
+        }
+        
+        return JsonResponse(response_data, status=200)
+
 
 
