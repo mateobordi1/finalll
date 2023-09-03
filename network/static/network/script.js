@@ -28,8 +28,16 @@ document.addEventListener('DOMContentLoaded', function(){
                     t_f: estado
                 })
               })
-              .then(data => {
-                window.location.reload();
+              .then(response =>response.json())
+              .then(result => {
+
+                console.log(result["categoria_estado"])
+                if (result["categoria_estado"] == true ){
+                    this.innerHTML="Quitar"
+                }else{
+                    this.innerHTML="Agregar"
+                }
+
 
               })
 
