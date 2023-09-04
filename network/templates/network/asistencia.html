@@ -1,0 +1,27 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+    <h3> Asistencia {{categoria}} </h3>
+    <p>fecha:{{fecha}} </p>
+    <form method="post" action="{% url 'asistencia' categoria %}">
+        {% csrf_token %}
+        {% for jugador in jugadores %}
+            <b>{{jugador.username}} </b>
+            <br>
+            <input type="number" name="jugador" value="{{jugador.id}}" readonly><br>
+            <label for="estado_{{jugador.id}}">presente</label><input type="radio" name="estado_{{jugador.id}}" value="presente"><br>
+            <label for="estado_{{jugador.id}}">ausente</label><input type="radio" name="estado_{{jugador.id}}" value="ausente"><br>
+            <label for="estado_{{jugador.id}}">tarde</label><input type="radio" name="estado_{{jugador.id}}" value="tarde"><br>
+            <label for="comentario_{{jugador.id}}">comentario:</label>
+            <input type="text" name="comentario_{{jugador.id}}"><br>
+            <br>
+            <br>
+            <br>
+        {% endfor %}
+        <br>
+        <br>
+        <button type="submit">Guardar</button>
+    </form>
+    
+
+{% endblock %}

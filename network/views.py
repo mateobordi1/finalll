@@ -7,9 +7,11 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from datetime import date
+from datetime import date , datetime
 
-from .models import User , Categoria
+
+from .models import User , Categoria , Asistencia
+from .forms import UserForm , AsistenciaForm
 
 @login_required(login_url='login')
 def index(request):
@@ -167,5 +169,24 @@ def a_q(request, id_user):
         
         return JsonResponse(response_data, status=200)
 
+def asistencia(request, categoria ):
+    jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria, categoria_estado=True)
+    if request.method == "GET":
+        fecha_actual = datetime.now()
+        return render(request, 'network/asistencia.html', {
+            "jugadores" : jugadores,
+            "categoria" :categoria,
+            "fecha": fecha_actual.strftime("%d/%m/%Y")
+        })
+    if request.method == "POST":
+        for jugador in jugadores:
+                asistencia = Asistencia()
+                asistencia.jugador = jugador
+                asistencia.tomada_por = request.user
+                asistencia.estado= request.POST.get('estado_'+str(jugador.id))
+                asistencia.comentarios= request.POST.get('comentario_' +str(jugador.id))
+                asistencia.categoria = jugador.categoria
+                asistencia.save()
 
-
+        return HttpResponseRedirect(reverse('index'))
+        

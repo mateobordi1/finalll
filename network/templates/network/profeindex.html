@@ -10,8 +10,6 @@
             {% endfor %}
             
         </ul>
-
-
     </nav>
    <h1>bienvenido profesor: <b>{{request.user.username}}</b> </h1> 
 
@@ -20,6 +18,16 @@
     {% else  %}
         <p>todavia no se te asigno ninguna categoria comunicate con el coordinador</p>
     {% endif %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <ul class="nav nav-tabs">
+            {% for categoria in categoria_lista %}
+            <li>
+                <a class="nav-link active" href="{% url 'asistencia' categoria %}" > Tomar Asistencia {{categoria}} </a>
+            </li>
+            {% endfor %}
+            
+        </ul>
+    </nav>
    {% for jugador in jugadores %}
         <div>
                 <div>

@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function(){
                     this.innerHTML="Agregar"
                 }
 
-
               })
 
 

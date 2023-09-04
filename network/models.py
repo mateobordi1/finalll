@@ -28,4 +28,13 @@ class Categoria(models.Model):
         return self.nombre
     
 
+class Asistencia(models.Model):
+    jugador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='asistencias_jugador')
+    tomada_por = models.ForeignKey(User, on_delete=models.CASCADE, related_name='asistencias_tomadas_por')
+    categoria = models.CharField(max_length=50, default='Default Category')
+    fecha = models.DateField(auto_now_add=True)
+    estado = models.CharField(max_length=20) 
+    comentarios = models.TextField(blank=True)
     
+    def __str__(self):
+        return f"Asistencia de {self.jugador} el {self.fecha} estado:{self.estado}"
