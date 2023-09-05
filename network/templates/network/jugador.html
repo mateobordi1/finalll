@@ -1,0 +1,23 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+    {{jugador}}
+    <table class="table table-bordered" >
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Comentarios</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asistencia in asistencias %}
+                <tr>
+                    <td>{{ asistencia.fecha }}</td>
+                    <td>{{ asistencia.estado }}</td>
+                    <td>{{ asistencia.comentarios }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

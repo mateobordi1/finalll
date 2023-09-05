@@ -1,11 +1,11 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    <h3> Modificar Caategoria</h3>
+    <h3> Modificar Categoria</h3>
     {% for jugador in jugadores %}
-    <div>
+    <div class=" col-md-4">
             <div>
-                {{jugador.username}}
+                <p>{{jugador.first_name}} {{jugador.last_name}}</p>
             </div>
             <div>
                 {{jugador.posicion}}

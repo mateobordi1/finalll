@@ -24,20 +24,35 @@
             <li>
                 <a class="nav-link active" href="{% url 'asistencia' categoria %}" > Tomar Asistencia {{categoria}} </a>
             </li>
+            <li>
+                <a class="nav-link active" href="{% url 'asistencia' categoria %}" > Realizar Convocatoria {{categoria}} </a>
+            </li>
             {% endfor %}
             
         </ul>
     </nav>
-   {% for jugador in jugadores %}
-        <div>
-                <div>
-                    {{jugador.username}}
-                </div>
-                <div>
-                    {{jugador.posicion}}
-                </div>
-                
-                <br>      
-        </div>
-   {% endfor %}
+
+   <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Posición</th>
+            <th>telefono 1 </th>
+            <th>telefono 2 </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for jugador in jugadores %}
+            <tr>
+                <td><a href="{% url 'jugador' jugador.id %}">{{ jugador.first_name }} {{ jugador.last_name }}</a> </td>
+                <td>{{ jugador.posicion }}</td>
+                <td>{{ jugador.telefono1 }}</td>
+                <td>{{ jugador.telefono2 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+
+   
 {% endblock %}

@@ -2,6 +2,11 @@
 {% load static %}
 {% block body %}
     <h3> Asistencia {{categoria}} </h3>
+    {% if mensaje %}
+    <div class="alert alert-danger">
+        {{mensaje}}
+    </div>
+    {% endif %}
     <p>fecha:{{fecha}} </p>
     <form method="post" action="{% url 'asistencia' categoria %}">
         {% csrf_token %}

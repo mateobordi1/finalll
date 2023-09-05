@@ -8,6 +8,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from datetime import date , datetime
+from django.core.paginator import Paginator
+
+
 
 
 from .models import User , Categoria , Asistencia
@@ -54,7 +57,7 @@ def index(request):
 
             return render(request, "network/index.html")
         
-        elif request.user.is_authenticated and request.user.logeado_como == "dt" or "pf":
+        elif request.user.is_authenticated and (request.user.logeado_como == "dt" or request.user.logeado_como == "pf"):
              
             if request.user.categoria == "0":
                 categoria_asignada = False
@@ -64,12 +67,15 @@ def index(request):
             categoria_lista = categorias.split()
             print(categoria_lista)
             
-            jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria_lista[0], categoria_estado=True )
+            jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria_lista[0], categoria_estado=True ).order_by('posicion')
+
             return render(request, 'network/profeindex.html', {
                 "jugadores": jugadores,
                 "categoria_asignada": categoria_asignada,
                 "categoria_lista": categoria_lista
             })
+        else:
+            return HttpResponse("No estas logueado como algo que tenga vista disponible comonicate con el coordinador")
 
 
 def login_view(request):
@@ -109,6 +115,8 @@ def register(request):
             return render(request, "network/register.html", {
                 "message": "Passwords must match."
             })
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
         fecha_nacimiento = request.POST["fecha_nacimiento"]
         telefono1 = request.POST.get("telefono1")
         telefono2 = request.POST.get("telefono2")
@@ -129,6 +137,8 @@ def register(request):
         # Attempt to create new user
         try:
             user = User.objects.create_user(username=username, email=email, password=password)
+            user.first_name = first_name
+            user.last_name = last_name
             user.fecha_nacimiento = fecha_nacimiento
             user.telefono1 = telefono1
             user.telefono2 = telefono2
@@ -152,7 +162,7 @@ def register(request):
 
 def modificar_categoria(request, categoria):
     if request.method == "GET":
-        jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria)
+        jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria).order_by('posicion')
         return render(request , 'network/modificar_categoria.html', {
             "jugadores" : jugadores
         })
@@ -173,11 +183,17 @@ def asistencia(request, categoria ):
     jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria, categoria_estado=True)
     if request.method == "GET":
         fecha_actual = datetime.now()
-        return render(request, 'network/asistencia.html', {
-            "jugadores" : jugadores,
-            "categoria" :categoria,
-            "fecha": fecha_actual.strftime("%d/%m/%Y")
-        })
+        editar_asistencia =   Asistencia.objects.filter(fecha=fecha_actual, categoria=categoria).exists()
+        if editar_asistencia == False:
+            return render(request, 'network/asistencia.html', {
+                "mensaje":"Solo podra tomar asistencia una vez por dia asegurese de no cometer errores",
+                "jugadores" : jugadores,
+                "categoria" :categoria,
+                "fecha": fecha_actual.strftime("%d/%m/%Y")
+            })
+        else:
+            return HttpResponse( "ya se tomo asistencia , por lo que no se puede llevar a cabo esta accion")
+            
     if request.method == "POST":
         for jugador in jugadores:
                 asistencia = Asistencia()
@@ -190,3 +206,10 @@ def asistencia(request, categoria ):
 
         return HttpResponseRedirect(reverse('index'))
         
+def jugador(request , user_id ):
+    jugador =  User.objects.get(pk= user_id)
+    asistencias = Asistencia.objects.filter(jugador=jugador)
+    return render(request, 'network/jugador.html',{
+        "jugador": jugador,
+        "asistencias": asistencias
+    })
