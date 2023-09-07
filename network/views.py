@@ -9,12 +9,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import date , datetime
 from django.core.paginator import Paginator
+from django.template import loader
 
 
 
+from .models import User , Categoria , Asistencia , Partido
 
-from .models import User , Categoria , Asistencia
-from .forms import UserForm , AsistenciaForm
 
 @login_required(login_url='login')
 def index(request):
@@ -66,13 +66,14 @@ def index(request):
             categorias = request.user.categoria
             categoria_lista = categorias.split()
             print(categoria_lista)
-            
+            categoria = Categoria.objects.get(nombre=categoria_lista[0])
+            print(categoria.id)
             jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria_lista[0], categoria_estado=True ).order_by('posicion')
 
             return render(request, 'network/profeindex.html', {
                 "jugadores": jugadores,
                 "categoria_asignada": categoria_asignada,
-                "categoria_lista": categoria_lista
+                "categoria": categoria,
             })
         else:
             return HttpResponse("No estas logueado como algo que tenga vista disponible comonicate con el coordinador")
@@ -160,18 +161,23 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+@login_required(login_url='login')
 def modificar_categoria(request, categoria):
     if request.method == "GET":
         jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria).order_by('posicion')
         return render(request , 'network/modificar_categoria.html', {
             "jugadores" : jugadores
         })
-    
+
+@login_required(login_url='login')    
 def a_q(request, id_user):
     if request.method == "PUT":
         user = User.objects.get(pk=id_user)
+        categoria = Categoria.objects.get(nombre=user.categoria)
         data = json.loads(request.body)
         user.categoria_estado = data["t_f"]
+        categoria.usuarios_en_categoria.add(user)
+        categoria.save()
         user.save()
         response_data = {
             "categoria_estado": user.categoria_estado
@@ -179,6 +185,7 @@ def a_q(request, id_user):
         
         return JsonResponse(response_data, status=200)
 
+@login_required(login_url='login')
 def asistencia(request, categoria ):
     jugadores = User.objects.filter(logeado_como="jugador", categoria=categoria, categoria_estado=True)
     if request.method == "GET":
@@ -205,7 +212,8 @@ def asistencia(request, categoria ):
                 asistencia.save()
 
         return HttpResponseRedirect(reverse('index'))
-        
+
+@login_required(login_url='login')       
 def jugador(request , user_id ):
     jugador =  User.objects.get(pk= user_id)
     asistencias = Asistencia.objects.filter(jugador=jugador)
@@ -213,3 +221,69 @@ def jugador(request , user_id ):
         "jugador": jugador,
         "asistencias": asistencias
     })
+
+@login_required(login_url='login')
+def convocatoria(request, categoria_id):
+    if request.method == "GET":
+        try:
+            convocatoria = Partido.objects.get(categoria=categoria_id, partido_finalizado=False)
+            # Realiza acciones con 'convocatoria' si existe
+        except Partido.DoesNotExist:
+            # Acciones a realizar si no se encuentra una convocatoria
+            convocatoria = None
+        categoria_datos = Categoria.objects.get(pk=categoria_id)
+        return render(request, 'network/convocatoria.html', {
+            "convocatoria" : convocatoria , 
+            "categoria": categoria_datos , 
+            "mensaje": "primero completa estos datos y guardalos para poder añadir los convocados"
+        })
+    if request.method == "POST":
+        categoria = Categoria.objects.get(id=categoria_id)
+        rival = request.POST['rival']
+        condicion = request.POST['condicion']
+        hora_citado = request.POST['hora_citado']
+        hora_partido = request.POST['hora_partido']
+        try:
+            partido = Partido.objects.get(categoria=categoria_id, partido_finalizado=False)
+        except Partido.DoesNotExist:
+            partido = Partido(
+                categoria=categoria,
+                rival=rival,
+                condicion=condicion,
+                hora_citacion=hora_citado,
+                hora_comienzo=hora_partido,
+                partido_finalizado=False 
+            )
+            partido.save()
+            return HttpResponseRedirect(reverse('index')) 
+        partido.rival=rival
+        partido.condicion=condicion
+        partido.hora_citacion=hora_citado
+        partido.hora_comienzo=hora_partido
+        partido.save()
+        return HttpResponseRedirect(reverse('index'))
+
+    if request.method == "PUT":
+
+        convocatoria = Partido.objects.get(categoria=categoria_id, partido_finalizado=False)
+        print(convocatoria.usuarios)
+        data = json.loads(request.body)
+        user = User.objects.get(pk=data["id_user"])
+        print(data)
+        if data["c_d"] == True:
+            estado = True
+            user.convocado_estado = data["c_d"]
+            convocatoria.usuarios.add(user)
+        else:
+            estado = False
+            user.convocado_estado = data["c_d"]
+            convocatoria.usuarios.remove(user)
+        user.save()
+        convocatoria.save()
+
+        response_data = {
+            "usuario_convocado": estado
+        }
+        
+        return JsonResponse(response_data, status=200)
+    

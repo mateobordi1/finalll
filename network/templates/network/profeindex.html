@@ -3,31 +3,31 @@
 {% block body %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <ul class="nav nav-tabs">
-            {% for categoria in categoria_lista %}
+            {% if categoria  %}
             <li>
                 <a class="nav-link active" href="{% url 'modificar_categoria' categoria %}" >Modificar Categoria {{categoria}} </a>
             </li>
-            {% endfor %}
+            {% endif %}
             
         </ul>
     </nav>
    <h1>bienvenido profesor: <b>{{request.user.username}}</b> </h1> 
 
     {% if categoria_asignada %} 
-        <h4>Categoria: {{request.user.categoria}} </h4>
+        <h4>Categoria: {{categoria}} </h4>
     {% else  %}
         <p>todavia no se te asigno ninguna categoria comunicate con el coordinador</p>
     {% endif %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <ul class="nav nav-tabs">
-            {% for categoria in categoria_lista %}
+            {% if categoria %}
             <li>
                 <a class="nav-link active" href="{% url 'asistencia' categoria %}" > Tomar Asistencia {{categoria}} </a>
             </li>
             <li>
-                <a class="nav-link active" href="{% url 'asistencia' categoria %}" > Realizar Convocatoria {{categoria}} </a>
+                <a class="nav-link active" href="{% url 'convocatoria' categoria.id %}" >  Convocatoria {{categoria}} </a>
             </li>
-            {% endfor %}
+            {% endif %}
             
         </ul>
     </nav>

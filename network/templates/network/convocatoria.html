@@ -1,0 +1,102 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+
+    <h1>Convocatoria {{categoria}}  </h1>
+
+    {% if not convocatoria %} 
+        
+        <div class="alert alert-danger">
+            <p>{{mensaje}} </p>
+        </div>
+
+    {% else %}
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Posición</th>
+                                <th>Convocatoria </th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in categoria.usuarios_en_categoria.all|dictsort:"posicion" %}
+                            {% if user.logeado_como == 'jugador' %}
+                                <tr>
+                                    <td><a href="{% url 'jugador' user.id %}">{{ user.first_name }} {{ user.last_name }}</a> </td>
+                                    <td>{{ user.posicion }}</td>
+                                    <td> <button class="boton_convocar" data-id_categoria="{{categoria.id}}" data-id_user="{{user.id}}" type="submit">{% if not user.convocado_estado %}Convocar{% else %}Desconvocar{% endif %}</button> </td>
+                                    
+                                </tr>
+                            {% endif %}
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4">No hay usuarios en esta categoría.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="col-md-6">
+                    <h3>Convocados VS {{convocatoria.rival}}</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre y Apellido </th>
+                                <th>Posicion </th>
+                            </tr>
+                        </thead>
+                        <tbody class="lista-convocados">
+                            {% for user in convocatoria.usuarios.all|dictsort:"posicion" %}
+                                <tr>
+                                    <td>{{ forloop.counter }}. <a href="{% url 'jugador' user.id %}">{{ user.first_name }} {{ user.last_name }}</a></td>
+                                    <td>{{user.posicion}} </td>
+                                </tr>       
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4">No hay usuarios convocados.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+    {% endif %}
+        
+
+        <form method="post" action="{% url 'convocatoria' categoria.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="rival">Rival</label>
+                <input type="text" id="rival" name="rival" class="form-control" placeholder="Rival" {% if convocatoria %}value="{{convocatoria.rival}}"{% endif %}>
+            </div>
+            <div class="form-group">
+                <label for="condicion">Condición</label>
+                <select id="condicion" name="condicion" class="form-control" >
+                    <option value="local" {% if convocatoria and convocatoria.condicion == 'local' %}selected{% endif %}>Local</option>
+                    <option value="visitante" {% if convocatoria and convocatoria.condicion == 'visitante' %}selected{% endif %}>Visitante</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="hora_citado">Hora de Citación</label>
+                <input type="datetime-local" id="hora_citado" name="hora_citado" class="form-control" placeholder="Hora de Citación"  {% if convocatoria %}value="{{convocatoria.hora_citacion|date:'Y-m-d\TH:i'}}"{% endif %}>
+            </div>
+            <div class="form-group">
+                <label for="hora_partido">Hora del Partido</label>
+                <input type="datetime-local" id="hora_partido" name="hora_partido" class="form-control" placeholder="Hora del Partido" {% if convocatoria %}value="{{convocatoria.hora_comienzo|date:'Y-m-d\TH:i'}}"{% endif %}>
+            </div>
+            <button type="submit" class="btn btn-primary">{% if convocatoria %} Editar {% else %} Guardar {% endif %}</button>
+        </form>
+   
+
+    
+{% endblock %}
