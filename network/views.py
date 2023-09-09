@@ -287,3 +287,15 @@ def convocatoria(request, categoria_id):
         
         return JsonResponse(response_data, status=200)
     
+@login_required(login_url='login')
+def partido(request, categoria_id):
+    if request.method == "GET":
+
+        categoria = Categoria.objects.get(pk=categoria_id)
+        convocatoria = Partido.objects.get(categoria=categoria , partido_finalizado=False)
+        cantidad_convocados = 16
+        return render(request, 'network/partido.html' , {
+            "convocatoria" : convocatoria ,
+            "cantidad_convocados" : cantidad_convocados
+        })
+    

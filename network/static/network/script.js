@@ -87,11 +87,37 @@ document.addEventListener('DOMContentLoaded', function(){
         })
     })
 
+    function ocultarSeleccionados() {
+        // Obtén todos los select dentro de la lista
+        const selectList = document.querySelectorAll('#lista-seleccion select');
+    
+        // Recorre todos los select en la lista
+        selectList.forEach((select, index) => {
+            // Obtén el valor seleccionado en el select actual
+            const seleccionado = select.value;
+    
+            // Recorre todos los selectores posteriores
+            for (let i = index + 1; i < selectList.length; i++) {
+                const siguienteSelect = selectList[i];
+                // Oculta la opción seleccionada en el select siguiente
+                const opcionSeleccionada = siguienteSelect.querySelector(`option[value="${seleccionado}"]`);
+                if (opcionSeleccionada) {
+                    opcionSeleccionada.style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    // Llama a la función para ocultar las opciones seleccionadas cuando cambia un select
+    document.querySelectorAll('#lista-seleccion select').forEach((select) => {
+        select.addEventListener('change', ocultarSeleccionados);
+    });
 
-    function getCookie(name) {
+function getCookie(name) {
         const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
         return cookieValue ? cookieValue.pop() : '';
       }
-    })
+
+})
 
     
