@@ -112,8 +112,41 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('#lista-seleccion select').forEach((select) => {
         select.addEventListener('change', ocultarSeleccionados);
     });
+    
+    function gestionarSeleccion() {
+        const selectElements = document.querySelectorAll('.select-jugador');
+        console.log(selectElements)
 
-function getCookie(name) {
+    selectElements.forEach((select) => {
+        const selectId = select.getAttribute('data-select');
+        const golesInput = document.querySelector(`.goles-input[data-select="${selectId}"]`);
+        const amarillaBtn = document.querySelector(`.agregar-amarilla[data-select="${selectId}"]`);
+        const rojaBtn = document.querySelector(`.agregar-roja[data-select="${selectId}"]`);
+
+        if (select.value === "" || select.value === null) {
+            golesInput.style.display = 'none';
+            amarillaBtn.style.display = 'none';
+            rojaBtn.style.display = 'none';
+        } else {
+            golesInput.style.display = 'inline-block';
+            amarillaBtn.style.display = 'inline-block';
+            rojaBtn.style.display = 'inline-block';
+        
+        }
+    });
+      }
+      
+      // Llama a la función para configurar la visibilidad inicial
+      gestionarSeleccion();
+      
+      // Escucha el evento change de cada select para actualizar la visibilidad
+      document.querySelectorAll('.select-jugador').forEach((select) => {
+        select.addEventListener('change', gestionarSeleccion);
+      });
+
+
+
+    function getCookie(name) {
         const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
         return cookieValue ? cookieValue.pop() : '';
       }

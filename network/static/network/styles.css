@@ -1,3 +1,7 @@
 .botones_a_categoria{
     background-color: aqua;
 }
+
+.ocultar {
+    display: none;
+}

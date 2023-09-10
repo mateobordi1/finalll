@@ -3,28 +3,25 @@
 {% block body %}
 
 <h1>Partido</h1>
-<div class="container">
+<div >
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <h3>Convocados VS {{convocatoria.rival}}</h3>
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Nombre y Apellido </th>
                         <th>Posicion </th>
-                        <th>Acciones</th>
+
                     </tr>
                 </thead>
                 <tbody class="lista-convocados">
                     {% for user in convocatoria.usuarios.all|dictsort:"posicion" %}
                         <tr>
+                            <td>{{ forloop.counter}} </td>
                             <td> <a href="{% url 'jugador' user.id %}" >{{ user.first_name }} {{ user.last_name }}</a></td>
                             <td>{{user.posicion}} </td>
-                            <td>
-                                <button class="btn btn-success btn-sm agregar-gol" data-id="{{ user.id }}">Gol</button>
-                                <button class="btn btn-warning btn-sm agregar-amarilla" data-id="{{ user.id }}">Amarilla</button>
-                                <button class="btn btn-danger btn-sm agregar-roja" data-id="{{ user.id }}">Roja</button>
-                            </td>
                         </tr>       
                     {% empty %}
                         <tr>
@@ -36,16 +33,23 @@
             
         </div>
         
-        <div class="col-md-6">
+        <div class="col-md-8" >
+            <h3>Planilla VS {{convocatoria.rival}}</h3>
             <ol id="lista-seleccion">
                 {% for _ in "1111111111111111" %}
                     <li>
-                        <select class="{% if forloop.counter <= 11 %}bg-success{% else%}bg-info{% endif %} ">
+                        <select class="{% if forloop.counter <= 11 %}bg-success{% else%}bg-info{% endif %} p-3 select-jugador" data-select="{{ forloop.counter }}">
                             <option value="" disabled selected>Selecciona un jugador</option>
                             {% for user in convocatoria.usuarios.all|dictsort:"posicion" %}  
                                 <option value="{{user.id}}">{{user.first_name}} {{user.last_name}} {{user.posicion}} </option>
                             {% endfor %}
                         </select>
+                        <input data-select="{{ forloop.counter }}" type="number" class="goles-input" data-id="{{ user.id }}" placeholder="Goles">
+                        
+                        <button data-select="{{ forloop.counter }}" class="btn btn-warning btn-sm agregar-amarilla p-3" data-id="{{ user.id }}">Amarilla</button>
+                        <button data-select="{{ forloop.counter }}" class="btn btn-danger btn-sm agregar-roja p-3" data-id="{{ user.id }}">Roja</button>
+                        <br>
+                        <br>
                     </li>
                 {% endfor %}
             </ol>
@@ -76,8 +80,9 @@
             <label for="comentario">Comentario:</label>
             <textarea type="text" class="form-control"  name="comentario" id="comentario" placeholder="Comentario"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary"> Guardar Edicion</button>
+        <button type="submit" class="btn btn-primary p-2"> Guardar Edicion</button>
     </form>
+    <button class="btn btn-danger p-5 "> Finalizar Partido</button>
 </div>
 
 {% endblock %}
