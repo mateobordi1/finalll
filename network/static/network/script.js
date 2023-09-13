@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function(){
     
     function gestionarSeleccion() {
         const selectElements = document.querySelectorAll('.select-jugador');
-        console.log(selectElements)
 
     selectElements.forEach((select) => {
         const selectId = select.getAttribute('data-select');
@@ -135,9 +134,6 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
       }
-      
-      // Llama a la función para configurar la visibilidad inicial
-      gestionarSeleccion();
       
       // Escucha el evento change de cada select para actualizar la visibilidad
       document.querySelectorAll('.select-jugador').forEach((select) => {

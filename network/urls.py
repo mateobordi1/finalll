@@ -13,5 +13,6 @@ urlpatterns = [
     path("asistencia/<str:categoria>" , views.asistencia , name="asistencia"),
     path("<int:user_id>" , views.jugador, name="jugador"),
     path("convocatoria/<int:categoria_id>", views.convocatoria , name="convocatoria"),
-    path("partido/<int:categoria_id>", views.partido , name="partido")
+    path("partido/<int:categoria_id>", views.partido , name="partido"),
+    path("categoria/<int:categoria_id>" , views.categoria , name="categoria")
 ]

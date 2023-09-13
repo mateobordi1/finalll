@@ -1,23 +1,56 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    {{jugador}}
-    <table class="table table-bordered" >
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Comentarios</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for asistencia in asistencias %}
-                <tr>
-                    <td>{{ asistencia.fecha }}</td>
-                    <td>{{ asistencia.estado }}</td>
-                    <td>{{ asistencia.comentarios }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div >
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Asistencias</h5>
+                <table class="table table-bordered" >
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asistencia in asistencias %}
+                            <tr>
+                                <td>{{ asistencia.fecha }}</td>
+                                <td>{{ asistencia.estado }}</td>
+                                <td>{{ asistencia.comentarios }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <h5>Estadisticas</h5>
+                <table class="table table-bordered" >
+                    <thead>
+                        <tr>
+                            <th>Partidos Jugados</th>
+                            <th>Titular</th>
+                            <th>Suplente</th>
+                            <th>Goles</th>
+                            <th>Tarjetas Amarillas</th>
+                            <th>Tarjetas Rojas</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td>{{partidos_jugados}} </td>
+                                <td>{{jugador.titular}} </td>
+                                <td>{{jugador.suplente}} </td>
+                                <td>{{jugador.goles_jugador}} </td>
+                                <td>{{jugador.ta_jugador}} </td>
+                                <td>{{jugador.tr_jugador}} </td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
 {% endblock %}

@@ -14,7 +14,7 @@
    <h1>bienvenido profesor: <b>{{request.user.username}}</b> </h1> 
 
     {% if categoria_asignada %} 
-        <h4>Categoria: {{categoria}} </h4>
+        <h4>Categoria: <a href="{% url 'categoria' categoria.id %}">  {{categoria}} </a></h4>
     {% else  %}
         <p>todavia no se te asigno ninguna categoria comunicate con el coordinador</p>
     {% endif %}
@@ -38,6 +38,7 @@
    <table class="table table-bordered">
     <thead>
         <tr>
+            <th></th>
             <th>Nombre</th>
             <th>Posición</th>
             <th>telefono 1 </th>
@@ -47,6 +48,7 @@
     <tbody>
         {% for jugador in jugadores %}
             <tr>
+                <td>{{ forloop.counter }}</td>
                 <td><a href="{% url 'jugador' jugador.id %}">{{ jugador.first_name }} {{ jugador.last_name }}</a> </td>
                 <td>{{ jugador.posicion }}</td>
                 <td>{{ jugador.telefono1 }}</td>

@@ -2,7 +2,12 @@
 {% load static %}
 {% block body %}
 
-<h1>Partido</h1>
+<h1>Partido {{categoria}} </h1>
+{% if mensaje %}
+<div class="alert alert-danger">
+    {{mensaje}}
+</div>
+{% endif %}
 <div >
     <div class="row">
         <div class="col-md-4">
@@ -36,18 +41,19 @@
         <div class="col-md-8" >
             <h3>Planilla VS {{convocatoria.rival}}</h3>
             <ol id="lista-seleccion">
+                <form method="post" action="{% url 'partido' categoria.id %}">
+                    {% csrf_token %}
                 {% for _ in "1111111111111111" %}
                     <li>
-                        <select class="{% if forloop.counter <= 11 %}bg-success{% else%}bg-info{% endif %} p-3 select-jugador" data-select="{{ forloop.counter }}">
+                        <select name="select_{{forloop.counter}}" class="{% if forloop.counter <= 11 %}bg-success{% else%}bg-info{% endif %} p-3 select-jugador" data-select="{{ forloop.counter }}">
                             <option value="" disabled selected>Selecciona un jugador</option>
                             {% for user in convocatoria.usuarios.all|dictsort:"posicion" %}  
                                 <option value="{{user.id}}">{{user.first_name}} {{user.last_name}} {{user.posicion}} </option>
                             {% endfor %}
                         </select>
-                        <input data-select="{{ forloop.counter }}" type="number" class="goles-input" data-id="{{ user.id }}" placeholder="Goles">
-                        
-                        <button data-select="{{ forloop.counter }}" class="btn btn-warning btn-sm agregar-amarilla p-3" data-id="{{ user.id }}">Amarilla</button>
-                        <button data-select="{{ forloop.counter }}" class="btn btn-danger btn-sm agregar-roja p-3" data-id="{{ user.id }}">Roja</button>
+                        <input name="goles_{{forloop.counter}}" data-select="{{ forloop.counter }}" type="number" class="goles-input"  placeholder="Goles" style="display: none;">
+                        <input name="ta_{{forloop.counter}}" data-select="{{ forloop.counter }}" class="btn btn-warning btn-sm agregar-amarilla " style="display: none;" placeholder="Tarjetas Amarillas" >
+                        <input name="tr_{{forloop.counter}}" data-select="{{ forloop.counter }}" class="btn btn-danger btn-sm agregar-roja "  style="display: none;" placeholder="Tarjetas Rojas">
                         <br>
                         <br>
                     </li>
@@ -58,10 +64,10 @@
 </div>
 
 <div class="col-md-12">
-    <form>
+    
         <div class="form-group">
             <label for="resultado">Resultado:</label>
-            <select id="resultado" name="resultado" class="form-control" >
+            <select id="resultado" name="resultado" class="form-control" required>
                 <option value="" disabled selected>Seleccione un Resultado</option>
                 <option value="ganado">Ganado</option>
                 <option value="perdido">Perdido</option>
@@ -70,19 +76,19 @@
         </div>
         <div class="form-group">
             <label for="gf">Goles a Favor:</label>
-            <input type="number" class="form-control"  name="gf" id="gf" placeholder="Goles a Favor">
+            <input type="number" class="form-control"  name="gf" id="gf" placeholder="Goles a Favor" required>
         </div>
         <div class="form-group">
             <label for="gc">Goles en Contra:</label>
-            <input type="number" class="form-control"  name="gc" id="gc" placeholder="Goles en Contra">
+            <input type="number" class="form-control"  name="gc" id="gc" placeholder="Goles en Contra" required>
         </div>
         <div class="form-group">
             <label for="comentario">Comentario:</label>
             <textarea type="text" class="form-control"  name="comentario" id="comentario" placeholder="Comentario"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary p-2"> Guardar Edicion</button>
+        <button type="submit" class="btn btn-danger p-5 float-right"> Finalizar Partido</button>
     </form>
-    <button class="btn btn-danger p-5 "> Finalizar Partido</button>
+    
 </div>
 
 {% endblock %}

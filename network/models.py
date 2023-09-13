@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.apps import apps
+from django.db.models import JSONField
 
 
 class User(AbstractUser):
@@ -18,6 +18,11 @@ class User(AbstractUser):
     trayectoria = models.CharField(max_length=10000, blank=True)
     dni = models.IntegerField(null=True, unique=True)
     logeado_como = models.CharField(default="jugador", max_length=100)
+    titular = models.IntegerField(default=0)
+    suplente = models.IntegerField( default=0)
+    goles_jugador = models.IntegerField( default=0)
+    ta_jugador = models.IntegerField(default=0)
+    tr_jugador = models.IntegerField( default=0)
 
     def __str__(self):
         return f" id : {self.id} {self.username}" 
@@ -39,6 +44,11 @@ class Partido(models.Model):
     hora_comienzo = models.DateTimeField()
     hora_citacion = models.DateTimeField()
     partido_finalizado = models.BooleanField(default=False)
+    resultado = models.CharField(max_length=50 ,blank=True ,  null=True)
+    gf = models.IntegerField(  default=0)
+    gc = models.IntegerField( default=0)
+    comentario = models.CharField(max_length=300 ,  blank=True , null=True)
+    formacion = JSONField(default=list)
 
     def __str__(self):
         return f"categoria {self.categoria} vs {self.rival} de {self.condicion}"

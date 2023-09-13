@@ -216,8 +216,10 @@ def asistencia(request, categoria ):
 @login_required(login_url='login')       
 def jugador(request , user_id ):
     jugador =  User.objects.get(pk= user_id)
+    partidos_jugados = jugador.titular + jugador.suplente
     asistencias = Asistencia.objects.filter(jugador=jugador)
     return render(request, 'network/jugador.html',{
+        "partidos_jugados": partidos_jugados,
         "jugador": jugador,
         "asistencias": asistencias
     })
@@ -290,12 +292,64 @@ def convocatoria(request, categoria_id):
 @login_required(login_url='login')
 def partido(request, categoria_id):
     if request.method == "GET":
-
         categoria = Categoria.objects.get(pk=categoria_id)
-        convocatoria = Partido.objects.get(categoria=categoria , partido_finalizado=False)
+        try:
+            convocatoria = Partido.objects.get(categoria=categoria , partido_finalizado=False)
+        except :
+            return HttpResponse("primero deves realizar la convocatoria")
         cantidad_convocados = 16
         return render(request, 'network/partido.html' , {
+            "mensaje" : "Rellena todos los campos antes de darle al boton finalizar el partido",
+            "categoria" : categoria ,
             "convocatoria" : convocatoria ,
             "cantidad_convocados" : cantidad_convocados
         })
+    if request.method == "POST":
+        categoria = Categoria.objects.get(pk=categoria_id)
+        partido = Partido.objects.get(categoria=categoria , partido_finalizado=False)
+
+        resultado = request.POST['resultado']
+        gf = request.POST['gf']
+        gc = request.POST['gc']
+        comentario = request.POST['comentario']
+        formacion = []
+
+        for i in range(1 , 17):
+            id_jugador= request.POST['select_'+ str(i)]
+            jugador = User.objects.get(pk=id_jugador)
+            goles_jugador = request.POST['goles_'+ str(i)]
+            ta_jugador = request.POST['ta_'+ str(i)]
+            tr_jugador = request.POST['tr_'+ str(i)]
+
+            if i <= 11:
+                jugador.titular = (jugador.titular + 1) if jugador.titular is not None else 1
+            else:
+                jugador.suplente = (jugador.suplente + 1) if jugador.suplente is not None else 1
+            jugador.convocado_estado = False
+            jugador.goles_jugador = goles_jugador
+            jugador.ta_jugador = ta_jugador
+            jugador.tr_jugador = tr_jugador
+            jugador.save()
+            jugador_info = {
+                'dorsal': i , 
+                'id_jugador': id_jugador
+            }
+            formacion.append(jugador_info)
+
+        partido.resultado = resultado
+        partido.gf = gf
+        partido.gc = gc
+        partido.comentario = comentario
+        partido.formacion = formacion
+        partido.partido_finalizado = True
+        partido.save()
+
+        return HttpResponseRedirect(reverse('index'))
     
+def categoria(request, categoria_id):
+    if request.method == "GET":
+        categoria = Categoria.objects.get(pk=categoria_id)
+        partidos_categoria = Partido.objects.filter(categoria=categoria)
+        return render(request , 'network/categoria_v.html', {
+            "partidos_categoria": partidos_categoria
+        })
