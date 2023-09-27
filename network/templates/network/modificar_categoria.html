@@ -1,27 +1,23 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    <h3> Modificar Categoria</h3>
-    {% for jugador in jugadores %}
-    <div class=" col-md-12 ">
-            <div class="col-md-12 btn btn-success btn-sm"  >{{ forloop.counter }}</div>
-            <div>
-                <p>{{jugador.first_name}} {{jugador.last_name}}</p>
+    <div class="container mt-4">
+        <h3 class="mb-4">Modificar Categoria</h3>
+        {% for jugador in jugadores %}
+        <div class="row border rounded p-3 mb-3">
+            <div class="col-md-1 btn btn-success btn-sm">{{ forloop.counter }}</div>
+            <div class="col-md-3">
+                <p class="mb-1">{{ jugador.first_name }} {{ jugador.last_name }}</p>
+                <small class="text-muted">{{ jugador.posicion }}</small>
             </div>
-            <div>
-                {{jugador.posicion}}
+            <div class="col-md-2">
+                {% if jugador.categoria_estado == 0 %}
+                    <button class="btn btn-primary btn-sm botones_a_categoria" data-id_user="{{ jugador.id }}" id="agregar_jugador">Agregar</button>
+                {% else %}
+                    <button class="btn btn-danger btn-sm botones_a_categoria" data-id_user="{{ jugador.id }}" id="agregar_jugador">Quitar</button>
+                {% endif %}
             </div>
-            {% if jugador.categoria_estado == 0 %}
-                <div>
-                    <button class="botones_a_categoria" data-id_user="{{jugador.id}}" id="agregar_jugador">Agregar</button>
-                </div>
-            {% else %}
-                <div>
-                    <button class="botones_a_categoria" data-id_user="{{jugador.id}}" id="agregar_jugador">Quitar</button>
-                </div>
-            {% endif %}
-            <br>      
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-
 {% endblock %}

@@ -1,7 +1,34 @@
 .botones_a_categoria{
     background-color: aqua;
+    color: black;
+    
 }
 
 .ocultar {
     display: none;
 }
+.col-md-1{
+    font-size: 30px;
+}
+.navbar-brand {
+    font-size: 50px; /* Cambia el tamaño de fuente a 24px (ajusta según tus preferencias) */
+}
+
+body {
+    font-size: 24px; /* Tamaño de fuente base (ajusta según tus preferencias) */
+}
+s
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+select,
+textarea,
+option{
+    font-size: 22px; /* Ajusta el tamaño de fuente según tus preferencias */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 2.5em; /* Tamaño de fuente para encabezados (ajusta según tus preferencias) */
+}
+

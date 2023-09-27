@@ -1,4 +1,7 @@
 import json
+import os
+from django.conf import settings
+import matplotlib.pyplot as plt
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
@@ -8,13 +11,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from datetime import date , datetime
-from django.core.paginator import Paginator
-from django.template import loader
-
+from django.db.models import Sum
 
 
 from .models import User , Categoria , Asistencia , Partido
 
+static_path = os.path.join(settings.BASE_DIR, 'static')
 
 @login_required(login_url='login')
 def index(request):
@@ -55,7 +57,10 @@ def index(request):
                         user.categoria = 'cebollitas'
                 user.save()
 
-            return render(request, "network/index.html")
+            asistencias_jugador = Asistencia.objects.filter(jugador=request.user.id)
+            return render(request, "network/index.html", {
+                "asistencias" : asistencias_jugador
+            })
         
         elif request.user.is_authenticated and (request.user.logeado_como == "dt" or request.user.logeado_como == "pf"):
              
@@ -78,7 +83,6 @@ def index(request):
         else:
             return HttpResponse("No estas logueado como algo que tenga vista disponible comonicate con el coordinador")
 
-
 def login_view(request):
     if request.method == "POST":
 
@@ -98,11 +102,9 @@ def login_view(request):
     else:
         return render(request, "network/login.html")
 
-
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
-
 
 def register(request):
     if request.method == "POST":
@@ -215,14 +217,19 @@ def asistencia(request, categoria ):
 
 @login_required(login_url='login')       
 def jugador(request , user_id ):
-    jugador =  User.objects.get(pk= user_id)
-    partidos_jugados = jugador.titular + jugador.suplente
-    asistencias = Asistencia.objects.filter(jugador=jugador)
-    return render(request, 'network/jugador.html',{
-        "partidos_jugados": partidos_jugados,
-        "jugador": jugador,
-        "asistencias": asistencias
-    })
+    if request.method == "GET":
+        jugador =  User.objects.get(pk= user_id)
+        categoria = Categoria.objects.get(nombre=jugador.categoria)
+        partidos_categoria = Partido.objects.filter(categoria=categoria).count()
+        partidos_convocado = jugador.titular + jugador.suplente
+        partidos_no_convocado = partidos_categoria - partidos_convocado
+        asistencias = Asistencia.objects.filter(jugador=jugador)
+        return render(request, 'network/jugador.html',{
+            "partidos_no_convocado": partidos_no_convocado,
+            "partidos_convocado": partidos_convocado,
+            "jugador": jugador,
+            "asistencias": asistencias
+        })
 
 @login_required(login_url='login')
 def convocatoria(request, categoria_id):
@@ -317,9 +324,9 @@ def partido(request, categoria_id):
         for i in range(1 , 17):
             id_jugador= request.POST['select_'+ str(i)]
             jugador = User.objects.get(pk=id_jugador)
-            goles_jugador = request.POST['goles_'+ str(i)]
-            ta_jugador = request.POST['ta_'+ str(i)]
-            tr_jugador = request.POST['tr_'+ str(i)]
+            goles_jugador = request.POST['goles_'+ str(i)] or 0
+            ta_jugador = request.POST['ta_'+ str(i)] or 0
+            tr_jugador = request.POST['tr_'+ str(i)] or 0
 
             if i <= 11:
                 jugador.titular = (jugador.titular + 1) if jugador.titular is not None else 1
@@ -349,7 +356,36 @@ def partido(request, categoria_id):
 def categoria(request, categoria_id):
     if request.method == "GET":
         categoria = Categoria.objects.get(pk=categoria_id)
-        partidos_categoria = Partido.objects.filter(categoria=categoria)
+        try:
+            partidos_categoria = Partido.objects.filter(categoria=categoria)
+        except:
+            return HttpResponse("todavia no hay partidos")
+        partidos_jugados = partidos_categoria.count()
+        partidos_ganados = partidos_categoria.filter(resultado='ganado').count() or 0
+        partidos_perdidos = partidos_categoria.filter(resultado='perdido').count() or 0
+        partidos_empatados = partidos_categoria.filter(resultado='empatado').count() or 0
+        total_goles_a_favor = partidos_categoria.aggregate(total_goles=Sum('gf'))['total_goles']
+        total_goles_en_contra = partidos_categoria.aggregate(total_goles=Sum('gc'))['total_goles']
+
+        plt.clf()
+
+        total_partidos = partidos_ganados + partidos_empatados + partidos_perdidos
+        colores = ['green', 'yellow', 'red']
+        ppg = (partidos_ganados / total_partidos) * 100 if total_partidos else 0
+        ppe = (partidos_empatados / total_partidos) * 100 if total_partidos else 0
+        ppp = (partidos_perdidos / total_partidos) * 100 if total_partidos else 0
+
+        categorias = [ 'Partidos Ganados', 'Partidos Empatados', 'Partidos Perdidos']
+        proporciones = [ppg, ppe, ppp]
+        plt.pie(proporciones, labels=categorias, autopct='%1.1f%%', startangle=140,  colors=colores)
+        plt.axis('equal')
+        plt.savefig(os.path.join(static_path, f'{categoria}_estadisticas.jpg'), bbox_inches='tight')
         return render(request , 'network/categoria_v.html', {
-            "partidos_categoria": partidos_categoria
+            "partidos_categoria": partidos_categoria,
+            "pj": partidos_jugados,
+            "pg": partidos_ganados ,
+            "pp": partidos_perdidos,
+            "pe": partidos_empatados, 
+            "gf": total_goles_a_favor,
+            "gc": total_goles_en_contra
         })

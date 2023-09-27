@@ -7,26 +7,44 @@
         {{mensaje}}
     </div>
     {% endif %}
-    <p>fecha:{{fecha}} </p>
-    <form method="post" action="{% url 'asistencia' categoria %}">
-        {% csrf_token %}
-        {% for jugador in jugadores %}
-            <b>{{jugador.username}} </b>
-            <br>
-            <input type="number" name="jugador" value="{{jugador.id}}" readonly><br>
-            <label for="estado_{{jugador.id}}">presente</label><input type="radio" name="estado_{{jugador.id}}" value="presente"><br>
-            <label for="estado_{{jugador.id}}">ausente</label><input type="radio" name="estado_{{jugador.id}}" value="ausente"><br>
-            <label for="estado_{{jugador.id}}">tarde</label><input type="radio" name="estado_{{jugador.id}}" value="tarde"><br>
-            <label for="comentario_{{jugador.id}}">comentario:</label>
-            <input type="text" name="comentario_{{jugador.id}}"><br>
-            <br>
-            <br>
-            <br>
-        {% endfor %}
-        <br>
-        <br>
-        <button type="submit">Guardar</button>
-    </form>
+    <div class="col-md-6 col-sm-12">
+        <p class="h4 text-primary">Fecha: {{ fecha }}</p>
+    </div>
+    <div class="container">
+        <div class="row">
+            <form method="post" action="{% url 'asistencia' categoria %}" class="w-100">
+                {% csrf_token %}
+                {% for jugador in jugadores %}
+                <div class="col-md-12">
+                    <div class="border p-3 mb-3">
+                        <label for="estado_{{ jugador.id }}"><b>{{ jugador.first_name}} {{ jugador.last_name}}</b></label>
+                        <input type="number" name="jugador" value="{{ jugador.id }}" readonly hidden class="form-control">
+                        <br>
+                        
+                        <label for="estado_{{ jugador.id }}">Estado:</label><br>
+                        <input type="radio" name="estado_{{ jugador.id }}" value="presente" id="estado_presente_{{ jugador.id }}" class="mr-1">
+                        <label for="estado_presente_{{ jugador.id }}" class="mr-3">Presente</label>
+                        
+                        <input type="radio" name="estado_{{ jugador.id }}" value="ausente" id="estado_ausente_{{ jugador.id }}" class="mr-1">
+                        <label for="estado_ausente_{{ jugador.id }}" class="mr-3">Ausente</label>
+                        
+                        <input type="radio" name="estado_{{ jugador.id }}" value="tarde" id="estado_tarde_{{ jugador.id }}" class="mr-1">
+                        <label for="estado_tarde_{{ jugador.id }}">Tarde</label>
+                        <br>
+
+                        <label for="comentario_{{ jugador.id }}">Comentario:</label>
+                        <input type="text" name="comentario_{{ jugador.id }}" class="form-control">
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+
     
 
 {% endblock %}

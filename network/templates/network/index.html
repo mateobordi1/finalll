@@ -1,7 +1,39 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-   bienvenido jugador: {{request.user.username}}
-    categoria:{{request.user.categoria}}
 
+    <h4>Categoria: {{request.user.categoria}} </h4>
+    <p>{{request.user.first_name}} </p>
+
+    <div class="row">
+        <div class="col-md-12 ">
+            <table class="table table-bordered" >
+                <thead>
+                    <tr>
+                        <th>Titular</th>
+                        <th>Suplente</th>
+                        <th>Goles</th>
+                        <th>Tarjetas Amarillas</th>
+                        <th>Tarjetas Rojas</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td>{{request.user.titular}} </td>
+                            <td>{{request.user.suplente}} </td>
+                            <td>{{request.user.goles_jugador}} </td>
+                            <td>{{request.user.ta_jugador}} </td>
+                            <td>{{request.user.tr_jugador}} </td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% for asistencia in asistencias %}
+        <div>
+            {{asistencia}}
+        </div>
+        
+    {% endfor %}
 {% endblock %}

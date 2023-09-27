@@ -1,8 +1,32 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
+    <h5>Estadisticas</h5>
+    <div class="col-md-6 mx-auto d-flex justify-content-center">
+        <img src="{% static 'cuarta_estadisticas.jpg' %}">
+    </div>
+    
+        <table class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th>Partidos Jugados</th>
+                    <th>Ganados</th>
+                    <th>Perdidos</th>
+                    <th>Empatados</th>
+                    <th>Goles a Favor</th>
+                    <th>Goles en Contra</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>{{pj}} </td>
+                        <td>{{pg}} </td>
+                        <td>{{pp}} </td>
+                        <td>{{pe}} </td>
+                        <td>{{gf}} </td>
+                        <td>{{gc}} </td>
+                        <td> </td>
+            </tbody>
+        </table>
 
-    {% for partido in partidos_categoria %}
-        <h1>{{partido}} </h1>    
-    {% endfor %}
 {% endblock %}
