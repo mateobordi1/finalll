@@ -3,11 +3,12 @@
 {% block body %}
 
     <h4>Categoria: {{request.user.categoria}} </h4>
-    <p>{{request.user.first_name}} </p>
+    <p style="color: brown;" >{{request.user.first_name}} {{request.user.last_name}}</p>
 
     <div class="row">
-        <div class="col-md-12 ">
-            <table class="table table-bordered" >
+        <div class="col-md-12">
+            <h5 style="color: blue;" >Estadisticas</h5>
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Titular</th>
@@ -30,10 +31,26 @@
             </table>
         </div>
     </div>
-    {% for asistencia in asistencias %}
         <div>
-            {{asistencia}}
-        </div>
-        
-    {% endfor %}
+            <h5 style="color: blue;" >Asistencias</h5>
+            <table class="table table-bordered" >
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asistencia in asistencias %}
+                        <tr>
+                            <td>{{ asistencia.fecha }}</td>
+                            <td>{{ asistencia.estado }}</td>
+                            <td>{{ asistencia.comentarios }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>      
+
 {% endblock %}

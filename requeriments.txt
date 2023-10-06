@@ -1,0 +1,2 @@
+
+necesite descargar lo siguiente para poder hacer la representacion de los graficos: matplotlib.pyplot 
